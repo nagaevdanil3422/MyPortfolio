@@ -14,8 +14,6 @@ namespace Student_Course_Manager
             
             Database database = new Database();
             
-            database.SeedData();
-            database.SaveStudents();
             database.LoadStudents();
             bool isWork = true;
 
