@@ -184,20 +184,34 @@ namespace Student_Course_Manager.Data
                 Console.WriteLine("Неверный формат ввода");
 
             enrollments.Add(new Enrollment(_nextEnrollmentId, studentId, courseId, date, Grade));
+            SaveEnrollments();
 
         }
         public void PrintEnrollmentsWithDetails()
         {
-            foreach(var enrollment in enrollments)
+            Console.WriteLine("=== ВСЕ ЗАПИСИ ===");
+
+            if (enrollments == null || !enrollments.Any())
             {
-                var studentId = students.FirstOrDefault(p =>  p.Id == enrollment.StudentId);
-                var courseId = courses.FirstOrDefault(p => p.Id == enrollment.CourseId);
-                if (enrollment.Grade != null) 
-                    Console.WriteLine($"{studentId.FirstName} {studentId.LastName} => {courseId.Name}, оценка: {enrollment.Grade}");
+                Console.WriteLine("Нет записей для отображения.");
+                return;
+            }
+
+            foreach (var enrollment in enrollments)
+            {
+                var student = students.FirstOrDefault(s => s.Id == enrollment.StudentId);
+                var course = courses.FirstOrDefault(c => c.Id == enrollment.CourseId);
+
+                if (student == null || course == null)
+                    continue;
+
+                if (enrollment.Grade.HasValue)
+                    Console.WriteLine($"{student.FirstName} {student.LastName} -> {course.Name}, оценка: {enrollment.Grade.Value:F2}");
                 else
-                    Console.WriteLine($"{studentId.FirstName} {studentId.LastName} => {courseId.Name}, оценка: не сдал");
+                    Console.WriteLine($"{student.FirstName} {student.LastName} -> {course.Name}, оценка: не сдал");
             }
         }
+
         public void PrintAverageGrades()
         {
             var courseGroupBy = enrollments
@@ -216,10 +230,9 @@ namespace Student_Course_Manager.Data
             if (!Int32.TryParse(inputCourseId, out int courseId))
             {
                 Console.WriteLine("Неверный формат ввода");
-                return; 
+                return;
             }
 
-            
             var selectedGroup = courseGroupBy.FirstOrDefault(g => g.Key == courseId);
 
             if (selectedGroup == null)
@@ -239,7 +252,6 @@ namespace Student_Course_Manager.Data
             {
                 Console.WriteLine($"Курс с ID {courseId} не найден");
             }
-
         }
 
         public void SaveStudents()
@@ -301,6 +313,34 @@ namespace Student_Course_Manager.Data
                 Console.WriteLine($"Успешно загружены курсы из файла {coursesJsonFile} (Загружено {courses.Count} записей)");
             }
             catch( Exception ex )
+            {
+                Console.WriteLine($"Ошибка при загрузке данных: {ex.Message}");
+            }
+        }
+        public void SaveEnrollments()
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject (enrollments);
+                File.WriteAllText(enrollmentsJsonFile, json);
+                Console.WriteLine($"Успешно сохранено в файл: {enrollmentsJsonFile}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Ошибка при сохранении данных: {ex.Message}");
+            }
+        }
+        public void LoadEnrollments()
+        {
+            try
+            {
+                if (!File.Exists(enrollmentsJsonFile)) Console.WriteLine("Такого файла не существует");
+
+                var json = File.ReadAllText (enrollmentsJsonFile);
+                enrollments = JsonConvert.DeserializeObject<List<Enrollment>>(json);
+                Console.WriteLine($"Успешно загруженo из файла {enrollmentsJsonFile} (Загружено {enrollments.Count} записей)");
+            }
+            catch(Exception ex)
             {
                 Console.WriteLine($"Ошибка при загрузке данных: {ex.Message}");
             }
