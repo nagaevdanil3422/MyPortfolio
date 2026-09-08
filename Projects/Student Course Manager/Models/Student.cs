@@ -23,9 +23,12 @@ namespace Student_Course_Manager
             Email = email;
 
         }
-        public void Print()
+        public override string ToString()
         {
-            Console.WriteLine($"{FirstName} {LastName}, возраст: {Age}, email: {Email}");
+            if (Email  == null) 
+                return $"[{Id}] {FirstName} {LastName}, возраст: {Age}, email: Не указан";
+            else
+                return $"[{Id}] {FirstName} {LastName}, возраст: {Age}, email: {Email}";
         }
 
     }

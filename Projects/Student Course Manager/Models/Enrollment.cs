@@ -23,14 +23,14 @@ namespace Student_Course_Manager
             Grade = grade;
         }
 
-        public void Print()
+        public override string ToString()
         {
             if (Grade == null)
             {
-                Console.WriteLine($"Студент {StudentId} записан на курс {CourseId}, Дата: {EnrollmentDate}, Оценка: Не сдал");
+                return $"[{Id}] Студент {StudentId} записан на курс {CourseId}, Дата: {EnrollmentDate}, Оценка: Не сдал";
             }
             else
-                Console.WriteLine($"Студент {StudentId} записан на курс {CourseId}, Дата: {EnrollmentDate}, Оценка: {Grade}");
+               return $"[{Id}] Студент {StudentId} записан на курс {CourseId}, Дата: {EnrollmentDate}, Оценка: {Grade}";
         }
     }
 }

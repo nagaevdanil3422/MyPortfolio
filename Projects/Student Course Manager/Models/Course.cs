@@ -18,9 +18,9 @@ namespace Student_Course_Manager
             Name = name;
             Credits = credits;
         }
-        public void Print()
+        public override string ToString()
         {
-            Console.WriteLine($"{Name}, Кредиты: {Credits}");
+            return $"[{Id}] {Name}, Кредиты: {Credits}";
         }
     }
 }
