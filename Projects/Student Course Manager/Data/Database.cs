@@ -15,9 +15,9 @@ namespace Student_Course_Manager.Data
         List<Student> students = new List<Student>();
         List<Course> courses = new List<Course>();
         List<Enrollment> enrollments = new List<Enrollment>();
-        string studentsJsonFile = "Students.json";
-        string coursesJsonFile = "Courses.json";
-
+        private readonly string studentsJsonFile = "Students.json";
+        private readonly string coursesJsonFile = "Courses.json";
+        private readonly string enrollmentsJsonFile = "Enrollments.json";
         int _nextStudentId = 1;
         int _nextCourseId = 1;
         int _nextEnrollmentId = 1;
@@ -129,6 +129,7 @@ namespace Student_Course_Manager.Data
 
             _nextCourseId = FreeId;
             courses.Add(new Course(_nextCourseId, Name, credit));
+            SaveCourses();
         }
 
 
@@ -276,6 +277,34 @@ namespace Student_Course_Manager.Data
                 
         }
 
+        public void SaveCourses()
+        {
+            try
+            {
+                var json = JsonConvert.SerializeObject(courses);
+                File.WriteAllText (coursesJsonFile, json);
+                Console.WriteLine($"Успешно сохранены курсы в файл: {coursesJsonFile}");
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine($"Ошибка при сохранении курсов: {ex.Message}");
+            }
+        }
+        public void LoadCourses()
+        {
+            try
+            {
+                if(!File.Exists(studentsJsonFile))
+                    Console.WriteLine("Такого файла не существует");
+                var json = File.ReadAllText(coursesJsonFile);
+                courses = JsonConvert.DeserializeObject<List<Course>>(json);
+                Console.WriteLine($"Успешно загружены курсы из файла {coursesJsonFile} (Загружено {courses.Count} записей)");
+            }
+            catch( Exception ex )
+            {
+                Console.WriteLine($"Ошибка при загрузке данных: {ex.Message}");
+            }
+        }
 
     }
 }

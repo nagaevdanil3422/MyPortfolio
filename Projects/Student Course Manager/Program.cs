@@ -13,8 +13,10 @@ namespace Student_Course_Manager
         {
             
             Database database = new Database();
-            
+            database.SeedData();
             database.LoadStudents();
+            database.LoadCourses();
+            
             bool isWork = true;
 
             while (isWork)
