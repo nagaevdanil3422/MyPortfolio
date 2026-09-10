@@ -48,7 +48,7 @@ namespace Student_Course_Manager.Data
         public void PrintAllStudents()
         {
             
-            if (students == null)
+            if (students.Count == 0)
             {
                 Console.WriteLine("Студентов нет");
             }
@@ -118,7 +118,11 @@ namespace Student_Course_Manager.Data
             Console.Write("Введите кредиты: ");
             string creditParse = Console.ReadLine();
             if (!Int32.TryParse(creditParse, out int credit))
+            {
                 Console.WriteLine("Ошибка: неверный формат ввода");
+                return;
+            }
+                
 
             int FreeId = _nextCourseId;
             
