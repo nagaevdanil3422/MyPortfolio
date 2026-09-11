@@ -17,6 +17,7 @@ namespace ToDoList.Services
         #region AddTask
         public void AddTask()
         {
+            jsonStorage.LoadTasks();
             Console.Write("Введите название: ");
             string inputTitle = Console.ReadLine();
 
@@ -53,6 +54,7 @@ namespace ToDoList.Services
         #region RemoveTask
         public void RemoveTask()
         {
+            jsonStorage.LoadTasks();
             Console.WriteLine("Какую задачу хотите удалить?");
             Console.Write("Введите id задачи: ");
             string inputTaskRemoveId = Console.ReadLine();
@@ -100,9 +102,10 @@ namespace ToDoList.Services
         #region MarkAsCompleted
         public void MarkAsCompleted()
         {
+            jsonStorage.LoadTasks();
             Console.Write("Введите id задачи: ");
             string inputIdTask = Console.ReadLine();
-            if(!Int32.TryParse(inputIdTask, out int id)) 
+            if (!Int32.TryParse(inputIdTask, out int id))
             {
                 Console.WriteLine("Неверный ввод формата");
                 return;
@@ -120,13 +123,12 @@ namespace ToDoList.Services
                 Console.WriteLine("Задача с таким id уже выполнена");
                 return;
             }
-            else
-            {
-                idTaskfirstOrDefail.IsCompleted = true;
 
-                Console.WriteLine($"Задача '{idTaskfirstOrDefail.Title} отмечена выполненой'");
-                jsonStorage.SaveTasks();
-            }
+            idTaskfirstOrDefail.IsCompleted = true;
+
+            Console.WriteLine($"Задача '{idTaskfirstOrDefail.Title}' отмечена выполненой");
+            jsonStorage.SaveTasks();
+
         }
         #endregion
 
@@ -134,7 +136,8 @@ namespace ToDoList.Services
         #region PrintActiveTasks
         public void PrintActiveTasks()
         {
-            var activeTaskWhere = jsonStorage.items.Where(p => !p.IsCompleted).ToList();
+            jsonStorage.LoadTasks();
+            var activeTaskWhere = jsonStorage.items.Where(p => !p.IsCompleted && !p.IsOverdue).ToList();
             
             if (activeTaskWhere.Count == 0)
             {
@@ -155,6 +158,7 @@ namespace ToDoList.Services
         #region PrintCompletedTasks
         public void PrintCompletedTasks()
         {
+            jsonStorage.LoadTasks();
             var completedTasks = jsonStorage.items.Where (p => p.IsCompleted == true).ToList();
             if (completedTasks.Count == 0)
             {
@@ -175,7 +179,8 @@ namespace ToDoList.Services
         #region PrintOverdueTasks
         public void PrintOverdueTasks()
         {
-            var tasksOverdueWhere = jsonStorage.items.Where(p => p.IsOverdue()).ToList();
+            jsonStorage.LoadTasks();
+            var tasksOverdueWhere = jsonStorage.items.Where(p => p.IsOverdue).ToList();
 
             if (tasksOverdueWhere.Count == 0)
             {
@@ -184,7 +189,7 @@ namespace ToDoList.Services
             else
             {
                 Console.WriteLine("----- Просроченные задачи -----");
-                foreach (var item in jsonStorage.items)
+                foreach (var item in tasksOverdueWhere)
                 {
                     Console.WriteLine(item);
                 }
@@ -196,10 +201,11 @@ namespace ToDoList.Services
         #region PrintStatistics
         public void PrintStatistics()
         {
+            jsonStorage.LoadTasks();
             var allTasks = jsonStorage.items.Count;
-            var active = jsonStorage.items.Count(p => !p.IsCompleted);
+            var active = jsonStorage.items.Count(p => !p.IsCompleted && !p.IsOverdue);
             var completed = jsonStorage.items.Count(p => p.IsCompleted == true);
-            var overdue = jsonStorage.items.Count(p => p.IsOverdue());
+            var overdue = jsonStorage.items.Count(p => p.IsOverdue);
 
             Console.WriteLine("----- Статистика -----");
             Console.WriteLine($"Всего задач: {allTasks}" +
@@ -213,6 +219,7 @@ namespace ToDoList.Services
         #region SortByDeadline
         public void SortByDeadline()
         {
+            jsonStorage.LoadTasks();
             var sortedDeadline = jsonStorage.items.OrderBy(p => p.Deadline).ToList();
 
             if(sortedDeadline.Count == 0)
